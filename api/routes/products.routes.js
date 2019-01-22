@@ -8,63 +8,128 @@ const path = require('path');
 var multer = require('multer');
 var xlsxj = require("xlsx-to-json");
 var xlsj = require("xls-to-json");
+var exceljs = require("exceljs");
+var xlsParser = require('xls-parser')
 
-// set the directory for the uploads to the uploaded to
 var DIR = './uploads/';
-//define the type of upload multer would be doing and pass in its destination, in our case, its a single file with the name photo
-var upload = multer({dest: DIR}).single('products-icount');
-/* GET home page. */
-// Requir
+var upload = multer({
+  dest: DIR
+}).single('products-icount');
+
 
 let Products = require('../models/product');
 
-//our file upload function.
 productsRoutes.route('/').post(function (req, res, next) {
-    var _path = '';
-    upload(req, res, function (err) {
-       if (err) {
-         // An error occurred when uploading
-         console.log(err);
-         return res.status(422).send("an Error occured")
-       } else { 
-         console.log(excelToJson(req.file.path));
-          res.json(excelToJson(req.file.path));
-      // Noret error occured.
-      
-    }
-      //  const workSheetsFromFile = xlsx.json(path);
-      //  console.log(workSheetsFromFile);
-      //  return res.send("Upload Completed for "+path); 
- });
-});
-// Defined get data(index or listing) route
-productsRoutes.route('/').get(function (req, res) {
-    Products.find(function (err, products){
-    if(err){
+  upload(req, res, function (err) {
+    if (err) {
       console.log(err);
+      return res.status(422).send("an Error occured")
     }
-    else {
+
+    xlsj({
+      input: req.file.path,
+      output: "output.json",
+      sheet: "Inventory"
+    }, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        result = modifyJson(result)
+      }
+      comapareDB(result);
+      res.send(result);
+      // Compare it to db, and add a stamp in case of a change
+    });
+
+  });
+});
+
+productsRoutes.route('/').get(function (req, res) {
+  Products.find(function (err, products) {
+    if (err) {
+      console.log(err);
+    } else {
       res.json(products);
     }
   });
 });
 
-function excelToJson(filepath) {
-   xlsj({
-        input: filepath, 
-        output: "output.json"
-      }, function(err, result) {
-        if(err) {
-          return err;
-        }else {
-         console.log(result);
-         return result;
-        }
-    });
 
+
+function modifyJson(array) {
+  for (let i = 0; i < array.length; i++) {
+    delete(array[i]['Includes VAT']);
+    delete(array[i]['is_deleted']);
+    delete(array[i]['Condition ID']);
+    delete(array[i]['Type ID']);
+    delete(array[i]['Manufacturer ID']);
+    delete(array[i]['Measurement Unit ID']);
+    delete(array[i]['Search']);
+    delete(array[i]['Serials']);
+    delete(array[i]['עלות לפני מע"מ - מטבע']);
+    delete(array[i]['מספר מוטבע']);
+    delete(array[i]['מינימום מותר']);
+    delete(array[i]['מחיר ללקוח לפני מע"מ - מטבע']);
+
+    array[i]['SKU'] = array[i]['מק"ט'];
+    delete(array[i]['מק"ט']);
+
+    array[i]['product_name'] = array[i]['שם המוצר'];
+    delete(array[i]['שם המוצר']);
+
+    array[i]['product_cost'] = array[i]['עלות לפני מע"מ'];
+    delete(array[i]['עלות לפני מע"מ']);
+
+    array[i]['product_price'] = array[i]['מחיר ללקוח לפני מע"מ'];
+    delete(array[i]['מחיר ללקוח לפני מע"מ']);
+
+    array[i]['product_quantity'] = array[i]['כמות במלאי'];
+    delete(array[i]['כמות במלאי']);
+
+    array[i]['warehouse'] = array[i]['Warehouse ID'];
+    delete(array[i]['Warehouse ID']);
+  }
+  return array;
 }
+
+// const bulkOperations = results.map(product => {
+//   const stamps = { [(new Date()).getTime()] : changeInQuantity };
+//   return {
+//       'updateOne': {
+//           'filter': { 'product_name': product.product_name },
+//           'update': { 
+//               '$inc': { 'product_quantity': changeInQuantity },
+//               '$push': { stamps }
+//           }
+//       }
+//   };
+// });
+// function comapareDB(result) {
+//   for (let i = 0; i < result.length; i++) {
+//     var date = Date.now();
+    
+//     Products.findOneAndUpdate(
+//       {"product_name": result[i]['product_name']},
+//       { $inc: {product_quantity: - result[i]['product_name']}},
+//       { $push: { stamps: {date : product_quantity - result[i]['product_name']} }}
+//     ).exec();
+//   }
+// }
 module.exports = productsRoutes;
 
+
+// function excelToJson(filepath) {
+//    xlsj({
+//         input: filepath, 
+//         output: "output.json"
+//       }, function(err, result) {
+//         if(err) {
+//           return err;
+//         }else {
+//          console.log(result);
+//          return result;
+//         }
+//     });
 
 
 // // // Defined store route

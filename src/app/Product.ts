@@ -4,5 +4,5 @@ export class Product {
     product_cost: String;
     product_price: String;
     product_quantity:  String;
-    warehouse : String;
+    stamps : Array<Object>;
   }

@@ -20,8 +20,8 @@ let Product = new Schema({
   product_quantity: {
     type: String
 },
-  warehouse :{
-    type: String
+  stamps :{
+    type: Array
 }
 },{
     collection: 'Products'

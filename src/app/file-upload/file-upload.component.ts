@@ -23,7 +23,7 @@ export class FileUploadComponent implements OnInit {
     //overide the onCompleteItem property of the uploader so we are 
     //able to deal with the server response.
     this.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
-         console.log("complete");
+         console.log(response);
      };
   }
 
@@ -44,10 +44,10 @@ export class FileUploadComponent implements OnInit {
                 .post(URL, formData).subscribe(
                 //map the success function and alert the response
                  (success) => {
-                         alert(success);
+                         console.log(success);
                 },
                 (error) => {
-                  return alert(error);
+                  console.log(error);
                 })
                 }
         

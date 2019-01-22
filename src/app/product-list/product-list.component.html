@@ -1,15 +1,15 @@
 <div class="container p-4">
   <h1 class="text-center mb-5">מוצרי מעפילים ישראל</h1>
-    <table class="table table-hover">
+    <table class="table table-hover" style="direction: rtl; text-align: right">
         <thead>
         <tr>
-            <td>SKU</td>
-            <td>Name</td>
-            <td>Cost</td>
-            <td>Price</td>
-            <td>Quantity</td>
-            <td>Warehouse</td>
-            <td colspan="2">Actions</td>
+            <td>מקט</td>
+            <td>שם המוצר</td>
+            <td>מחיר עלות</td>
+            <td>מחיר ללקוח</td>
+            <td>כמות</td>
+         
+     
         </tr>
         </thead>
       
@@ -20,9 +20,8 @@
                 <td>{{ product.product_cost }}</td>
                 <td>{{ product.product_price }}</td>
                 <td>{{ product.product_quantity }}</td>
-                <td>{{ product.warehouse }}</td>
-                <td><a class="btn btn-primary">Edit</a></td>
-                <td><a class="btn btn-danger">Delete</a></td>
+          
+              
             </tr>
         </tbody>
       </table>
