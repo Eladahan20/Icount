@@ -24,8 +24,8 @@ export class ProductListComponent implements OnInit {
   productsGetToday(products){
     products.forEach(element => {
       let todayStamp = element['Stamps'][element['Stamps'].length-1];
-      let todaySells = Object.values(todayStamp);
-      element['today']= todaySells[0];
+      const values = Object.keys(todayStamp).map(key => todayStamp[key]);
+      element['today']= values[0];
     });
     return products;
   }

@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import {  FileUploader } from 'ng2-file-upload/ng2-file-upload';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
+
 const URL = '/products';
 @Component({
   selector: 'app-navbar',
