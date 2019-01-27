@@ -3,7 +3,9 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     cors = require('cors'),
     mongoose = require('mongoose'),
-    config = require('db');
+    config = {
+      DB: 'mongodb://eladdahan:sculpture77@ds213615.mlab.com:13615/maapilim'
+    }
  
 
 const productsRoute = require('./routes/products.routes');
