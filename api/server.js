@@ -3,7 +3,7 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     cors = require('cors'),
     mongoose = require('mongoose'),
-    config = require('./DB');
+    config = require('db');
  
 
 const productsRoute = require('./routes/products.routes');
