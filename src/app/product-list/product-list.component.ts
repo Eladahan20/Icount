@@ -8,6 +8,7 @@ import { ProductsService } from '../products.service';
 })
 export class ProductListComponent implements OnInit {
   products: Product[];
+  date : string;
   constructor(private ps: ProductsService) { }
 
   ngOnInit() {
@@ -15,7 +16,24 @@ export class ProductListComponent implements OnInit {
       .getProducts()
         .subscribe((data: Product[]) => {
           this.products = data;
+          this.products = this.productsGetToday(this.products);
+          console.log(this.products);
         })
+  }
+
+  productsGetToday(products){
+    products.forEach(element => {
+      let todayStamp = element['Stamps'][element['Stamps'].length-1];
+      let todaySells = Object.values(todayStamp);
+      element['today']= todaySells[0];
+    });
+    return products;
+  }
+  productsGetYesterday(products){
+    
+  }
+  productsGetLastMonth(products){
+    
   }
 
 }

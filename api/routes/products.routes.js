@@ -1,16 +1,12 @@
-// business.route.js
-
 const express = require('express');
 const app = express();
 const productsRoutes = express.Router();
 const fs = require('fs');
 const path = require('path');
-var multer = require('multer');
-var xlsxj = require("xlsx-to-json");
 var xlsj = require("xls-to-json");
-var exceljs = require("exceljs");
-var xlsParser = require('xls-parser')
 
+// File Upload System
+var multer = require('multer');
 var DIR = './uploads/';
 var upload = multer({
   dest: DIR
@@ -18,7 +14,23 @@ var upload = multer({
 
 
 let Products = require('../models/product');
+let databaseProducts = [];
 
+
+
+// 1. GET - collects all records from DB and send it as json.
+productsRoutes.route('/').get(function (req, res) {
+  Products.find(function (err, products) {
+    if (err) {
+      console.log(err);
+    } else {
+      databaseProducts = products;
+      res.json(products);
+    }
+  });
+});
+
+//2. POST - collects a file uploaded, modify it, convert it to JSON and send it to the modification function.
 productsRoutes.route('/').post(function (req, res, next) {
   upload(req, res, function (err) {
     if (err) {
@@ -36,23 +48,54 @@ productsRoutes.route('/').post(function (req, res, next) {
       } else {
         result = modifyJson(result)
       }
-      comapareDB(result);
-      res.send(result);
-      // Compare it to db, and add a stamp in case of a change
+      res.json(modifyDatabase(result));
     });
 
   });
 });
 
-productsRoutes.route('/').get(function (req, res) {
-  Products.find(function (err, products) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.json(products);
-    }
+function findInArray(array, SKU) {
+  let temp = array.filter(function(elem) {
+    return elem['SKU'] === SKU;
   });
-});
+  return temp[0];
+}
+
+function modifyDatabase(newInventoryCount) {
+  let bulkOperations = [];
+  for (let i = 0; i < databaseProducts.length; i++) {
+    var temp = findInArray(newInventoryCount, databaseProducts[i]['SKU']);
+    if (temp['Quantity'] != databaseProducts[i]["Quantity"]) {
+      const thisProduct = databaseProducts[i]['SKU'];
+      const changeInQuantity = temp['Quantity'] - databaseProducts[i]['Quantity'];
+      const stamps = {
+        [(new Date()).getTime()]: changeInQuantity
+      }
+      bulkOperations.push({
+        'updateOne': {
+          'filter': {
+            'SKU': thisProduct
+          },
+          'update': {
+            '$inc': {
+              'Quantity': changeInQuantity
+            },
+            '$push': {
+              'Stamps' :  stamps 
+            }
+          }
+        }
+
+
+      });
+    }
+  }
+
+  const bulkResult = Products.bulkWrite(bulkOperations)
+
+  return bulkResult;
+}
+
 
 
 
@@ -70,113 +113,21 @@ function modifyJson(array) {
     delete(array[i]['מספר מוטבע']);
     delete(array[i]['מינימום מותר']);
     delete(array[i]['מחיר ללקוח לפני מע"מ - מטבע']);
+    delete(array[i]['עלות לפני מע"מ']);
+    delete(array[i]['מחיר ללקוח לפני מע"מ']);
+    delete(array[i]['Warehouse ID']);
 
     array[i]['SKU'] = array[i]['מק"ט'];
     delete(array[i]['מק"ט']);
 
-    array[i]['product_name'] = array[i]['שם המוצר'];
+    array[i]['Name'] = array[i]['שם המוצר'];
     delete(array[i]['שם המוצר']);
 
-    array[i]['product_cost'] = array[i]['עלות לפני מע"מ'];
-    delete(array[i]['עלות לפני מע"מ']);
-
-    array[i]['product_price'] = array[i]['מחיר ללקוח לפני מע"מ'];
-    delete(array[i]['מחיר ללקוח לפני מע"מ']);
-
-    array[i]['product_quantity'] = array[i]['כמות במלאי'];
+    array[i]['Quantity'] = array[i]['כמות במלאי'];
     delete(array[i]['כמות במלאי']);
-
-    array[i]['warehouse'] = array[i]['Warehouse ID'];
-    delete(array[i]['Warehouse ID']);
   }
   return array;
 }
 
-// const bulkOperations = results.map(product => {
-//   const stamps = { [(new Date()).getTime()] : changeInQuantity };
-//   return {
-//       'updateOne': {
-//           'filter': { 'product_name': product.product_name },
-//           'update': { 
-//               '$inc': { 'product_quantity': changeInQuantity },
-//               '$push': { stamps }
-//           }
-//       }
-//   };
-// });
-// function comapareDB(result) {
-//   for (let i = 0; i < result.length; i++) {
-//     var date = Date.now();
-    
-//     Products.findOneAndUpdate(
-//       {"product_name": result[i]['product_name']},
-//       { $inc: {product_quantity: - result[i]['product_name']}},
-//       { $push: { stamps: {date : product_quantity - result[i]['product_name']} }}
-//     ).exec();
-//   }
-// }
+
 module.exports = productsRoutes;
-
-
-// function excelToJson(filepath) {
-//    xlsj({
-//         input: filepath, 
-//         output: "output.json"
-//       }, function(err, result) {
-//         if(err) {
-//           return err;
-//         }else {
-//          console.log(result);
-//          return result;
-//         }
-//     });
-
-
-// // // Defined store route
-// businessRoutes.route('/add').post(function (req, res) {
-//   let business = new Business(req.body);
-//   business.save()
-//     .then(business => {
-//       res.status(200).json({'business': 'business in added successfully'});
-//     })
-//     .catch(err => {
-//     res.status(400).send("unable to save to database");
-//     });
-// });
-
-
-// // Defined edit route
-// businessRoutes.route('/edit/:id').get(function (req, res) {
-//   let id = req.params.id;
-//   Business.findById(id, function (err, business){
-//       res.json(business);
-//   });
-// });
-
-// //  Defined update route
-// businessRoutes.route('/update/:id').post(function (req, res) {
-//     Business.findById(req.params.id, function(err, next, business) {
-//     if (!business)
-//       return next(new Error('Could not load Document'));
-//     else {
-//         business.person_name = req.body.person_name;
-//         business.business_name = req.body.business_name;
-//         business.business_gst_number = req.body.business_gst_number;
-
-//         business.save().then(business => {
-//           res.json('Update complete');
-//       })
-//       .catch(err => {
-//             res.status(400).send("unable to update the database");
-//       });
-//     }
-//   });
-// });
-
-// // Defined delete | remove | destroy route
-// businessRoutes.route('/delete/:id').get(function (req, res) {
-//     Business.findByIdAndRemove({_id: req.params.id}, function(err, business){
-//         if(err) res.json(err);
-//         else res.json('Successfully removed');
-//     });
-// });

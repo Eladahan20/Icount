@@ -16,8 +16,16 @@ var corsOptions = {
     origin: '*',
     optionsSuccessStatus: 200
 };
+
 const app = express();
+
+// Parsers
+
+
+// Angular DIST output folder
+app.use(express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false}));
 app.use(cors(corsOptions));
 app.use('/products', productsRoute);
 

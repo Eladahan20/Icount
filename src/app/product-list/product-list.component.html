@@ -1,25 +1,25 @@
 <div class="container p-4">
-  <h1 class="text-center mb-5">מוצרי מעפילים ישראל</h1>
+  <h1 class="text-center mt-3">מוצרי מעפילים ישראל</h1>
+  <h5 class="text-center mb-3">עודכן לאחרונה: {{ date }} </h5>
     <table class="table table-hover" style="direction: rtl; text-align: right">
         <thead>
         <tr>
             <td>מקט</td>
             <td>שם המוצר</td>
-            <td>מחיר עלות</td>
-            <td>מחיר ללקוח</td>
             <td>כמות</td>
-         
+            <td>היום</td>
+            <td>מתחילת החודש</td>
+            <td>חודש שעבר</td>
      
         </tr>
         </thead>
       
         <tbody>
             <tr *ngFor="let product of products">
-                <td>{{ product.sku }}</td>
-                <td>{{ product.product_name }}</td>
-                <td>{{ product.product_cost }}</td>
-                <td>{{ product.product_price }}</td>
-                <td>{{ product.product_quantity }}</td>
+                <td>{{ product.SKU }}</td>
+                <td>{{ product.Name }}</td>
+                <td>{{ product.Quantity }}</td>
+                <td>{{ product.today}}</td>
           
               
             </tr>

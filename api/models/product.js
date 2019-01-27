@@ -5,22 +5,16 @@ const Schema = mongoose.Schema;
 
 // Define collection and schema for Business
 let Product = new Schema({
-  sku: {
+  SKU: {
     type: String
   },
-  product_name: {
+  Name: {
     type: String
   },
-  product_cost: {
-    type: String
-  },
-  product_price: {
-      type: String
-  },
-  product_quantity: {
-    type: String
+  Quantity: {
+    type: Number
 },
-  stamps :{
+  Stamps :{
     type: Array
 }
 },{
