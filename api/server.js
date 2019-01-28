@@ -32,7 +32,7 @@ app.use(cors(corsOptions));
 
 app.use('/products', productsRoute);
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Maapilim-Inventory/index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const port = process.env.PORT || 4000;
