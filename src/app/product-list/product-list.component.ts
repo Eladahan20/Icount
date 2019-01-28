@@ -23,14 +23,34 @@ export class ProductListComponent implements OnInit {
 
   productsGetToday(products){
     products.forEach(element => {
+      // takes the last stamp as objecs e,.g { 15043594329: 4}
       let todayStamp = element['Stamps'][element['Stamps'].length-1];
-      const values = Object.keys(todayStamp).map(key => todayStamp[key]);
-      element['today']= values[0];
+      // takes its value
+      if (todayStamp) {
+        const values = Object.keys(todayStamp).map(key => 
+          todayStamp[key]);
+        const keys = Object.keys(todayStamp);
+        // assign it to 'today' dynamic attribute
+        element['today_quantity']= values[0];
+        element['today_date'] = this.getTime(keys[0]);
+      }
     });
     return products;
-  }
-  productsGetYesterday(products){
-    
+  } 
+  getTime(timestamp){
+    timestamp = parseInt(timestamp);
+    var date = new Date(timestamp);
+   return date;
+
+    // console.log(day);
+    //     // Minutes part from the timestamp
+    // var month = date.getMonth();
+    // console.log(month);
+    // Seconds part fr
+
+// Will display time in 10:30:23 format
+// var formattedTime = hours + '/' + minutes + '/' + seconds;
+// return formattedTime;
   }
   productsGetLastMonth(products){
     
