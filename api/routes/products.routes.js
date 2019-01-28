@@ -20,6 +20,7 @@ let databaseProducts = [];
 
 // 1. GET - collects all records from DB and send it as json.
 productsRoutes.route('/').get(function (req, res) {
+  console.log('New Visitor');
   Products.find(function (err, products) {
     if (err) {
       console.log(err);
