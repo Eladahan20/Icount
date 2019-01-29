@@ -18,7 +18,7 @@ import {
 })
 export class ProductListComponent implements OnInit {
   products: Product[];
-  date: string;
+  date: number;
   constructor(private ps: ProductsService) {}
 
   ngOnInit() {
