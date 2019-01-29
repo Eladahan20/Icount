@@ -1,6 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Product } from '../Product';
-import { ProductsService } from '../products.service';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+import {
+  Product
+} from '../Product';
+import {
+  ProductsService
+} from '../products.service';
+import {
+  isNumber
+} from 'util';
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
@@ -8,52 +18,69 @@ import { ProductsService } from '../products.service';
 })
 export class ProductListComponent implements OnInit {
   products: Product[];
-  date : string;
-  constructor(private ps: ProductsService) { }
+  date: string;
+  constructor(private ps: ProductsService) {}
 
   ngOnInit() {
     this.ps
       .getProducts()
-        .subscribe((data: Product[]) => {
-          this.products = data;
-          this.products = this.productsGetToday(this.products);
-          console.log(this.products);
-        })
+      .subscribe((data: Product[]) => {
+        this.products = data;
+        this.products = this.productsGetToday(this.products);
+        this.products = this.productsGetMonth(this.products);
+        console.log(this.products);
+      })
+    this.ps.getDate().subscribe((data: any) => {
+      this.date = data[0]['last_update'];
+    });
   }
 
-  productsGetToday(products){
+
+  productsGetMonth(products) {
+    for (let i = 0; i < products.length; i++) {
+      var monthQuantity = 0;
+      const element = products[i]['Stamps']; // element = [{1243253: 3, 13253425: -11}] ..
+      for (let j = 0; j < element.length; j++) {
+        const quantity_stamp = element[j];
+        const values = Object.keys(quantity_stamp).map(key =>
+          quantity_stamp[key]);
+        if (isNumber(values[0])) {
+          monthQuantity += values[0];
+        }
+      }
+      products[i]['monthly'] = monthQuantity;
+
+    }
+    return products;
+
+  }
+
+  productsGetToday(products) {
     products.forEach(element => {
+      element['daily'] = 0;
       // takes the last stamp as objecs e,.g { 15043594329: 4}
-      let todayStamp = element['Stamps'][element['Stamps'].length-1];
+      let todayStamp = element['Stamps'][element['Stamps'].length - 1];
       // takes its value
       if (todayStamp) {
-        const values = Object.keys(todayStamp).map(key => 
+        const values = Object.keys(todayStamp).map(key =>
           todayStamp[key]);
         const keys = Object.keys(todayStamp);
         // assign it to 'today' dynamic attribute
-        element['today_quantity']= values[0];
-        element['today_date'] = this.getTime(keys[0]);
+        if (isNumber(values[0])) {
+          element['daily'] = values[0];
+          element['today_date'] = this.getTime(keys[0]);
+        } else {
+          element['daily'] = 0;
+        }
+
       }
     });
     return products;
-  } 
-  getTime(timestamp){
+  }
+  getTime(timestamp) {
     timestamp = parseInt(timestamp);
     var date = new Date(timestamp);
-   return date;
-
-    // console.log(day);
-    //     // Minutes part from the timestamp
-    // var month = date.getMonth();
-    // console.log(month);
-    // Seconds part fr
-
-// Will display time in 10:30:23 format
-// var formattedTime = hours + '/' + minutes + '/' + seconds;
-// return formattedTime;
-  }
-  productsGetLastMonth(products){
-    
+    return date;
   }
 
 }

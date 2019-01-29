@@ -7,20 +7,20 @@ var xlsj = require("xls-to-json");
 
 // File Upload System
 var multer = require('multer');
-var DIR = './uploads/';
+var DIR = 'api/uploads/';
 var upload = multer({
   dest: DIR
 }).single('products-icount');
 
 
 let Products = require('../models/product');
+let last_update = require('../models/last_update');
 let databaseProducts = [];
 
 
 
 // 1. GET - collects all records from DB and send it as json.
 productsRoutes.route('/').get(function (req, res) {
-  console.log('New Visitor');
   Products.find(function (err, products) {
     if (err) {
       console.log(err);
@@ -31,8 +31,20 @@ productsRoutes.route('/').get(function (req, res) {
   });
 });
 
+productsRoutes.route('/last_update').get(function (req, res) {
+  last_update.find(function (err, products) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(products);
+    }
+  });
+});
+
+
 //2. POST - collects a file uploaded, modify it, convert it to JSON and send it to the modification function.
 productsRoutes.route('/').post(function (req, res, next) {
+  removeAllFiles(DIR);
   upload(req, res, function (err) {
     if (err) {
       console.log(err);
@@ -65,8 +77,9 @@ function findInArray(array, SKU) {
 function modifyDatabase(newInventoryCount) {
   let bulkOperations = [];
   for (let i = 0; i < databaseProducts.length; i++) {
+    if (databaseProducts[i]['SKU'] == '1') { continue; }
     var temp = findInArray(newInventoryCount, databaseProducts[i]['SKU']);
-    if (temp['Quantity'] != databaseProducts[i]["Quantity"]) {
+    if (temp['Quantity'] && (temp['Quantity'] != databaseProducts[i]["Quantity"])) {
       const thisProduct = databaseProducts[i]['SKU'];
       const changeInQuantity = temp['Quantity'] - databaseProducts[i]['Quantity'];
       const stamps = {
@@ -91,10 +104,32 @@ function modifyDatabase(newInventoryCount) {
       });
     }
   }
-
-  const bulkResult = Products.bulkWrite(bulkOperations)
-
-  return bulkResult;
+  let bulkResults;
+  if (bulkOperations.length> 0 ) {
+    Products.bulkWrite(bulkOperations, function(err,result) {
+      if (err) { console.log(err); }
+      bulkResults = result;
+    });
+  }
+  let time = new Date().getTime();
+  last_update.findOneAndUpdate(
+    {'sku': 1}, 
+    {$set : {'last_update' : time}},
+    {new: true },
+    function(err,raw) {
+    if (err) { console.log(err); }
+    if (raw) {console.log(raw)};
+  });
+  
+  // last_update.find(function(err,result) {
+  //   console.log('do that');
+  //   if (err) {
+  //     console.log(err);
+  //   } else {
+  //     last_date = result;
+  //   }
+  // });
+  return bulkResults;
 }
 
 
@@ -128,6 +163,18 @@ function modifyJson(array) {
     delete(array[i]['כמות במלאי']);
   }
   return array;
+}
+
+function removeAllFiles(directory) {
+  fs.readdir(directory, (err, files) => {
+    if (err) throw err;
+  
+    for (const file of files) {
+      fs.unlink(path.join(directory, file), err => {
+        if (err) throw err;
+      });
+    }
+  });
 }
 
 

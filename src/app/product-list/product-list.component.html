@@ -7,7 +7,8 @@
             <td>מקט</td>
             <td>שם המוצר</td>
             <td>כמות</td>
-            <td>אחרון</td>
+            <td>תנועה אחרונה</td>
+            <td>חודש אחרון</td>
 
      
         </tr>
@@ -18,7 +19,8 @@
                 <td>{{ product.SKU }}</td>
                 <td>{{ product.Name }}</td>
                 <td>{{ product.Quantity }}</td>
-                <td *ngIf="product.today_date">{{ product.today_quantity}} ( {{ product.today_date | date: 'dd/MM/yyyy'}} )</td>
+                <td>{{ product.daily}} ( {{ product.today_date | date: 'dd/MM/yyyy'}} )</td>
+                <td>{{ product.monthly}}</td>
           
               
             </tr>

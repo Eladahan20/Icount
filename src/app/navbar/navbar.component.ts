@@ -4,6 +4,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 
 
 const URL = '/products';
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -11,6 +12,7 @@ const URL = '/products';
 })
 export class NavbarComponent implements OnInit {
 
+  public last_update;
   public uploader:FileUploader = new FileUploader({url: URL, itemAlias: 'products-icount'});
   constructor(private http: HttpClient, private el: ElementRef) { }
 
@@ -20,10 +22,18 @@ export class NavbarComponent implements OnInit {
     //overide the onCompleteItem property of the uploader so we are 
     //able to deal with the server response.
     this.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
-         console.log(response);
-     };
-  }
+         this.last_update = new Date(item['_file']['lastModified']);
 
+     };
+
+     
+  }
+  
+ 
+
+  reloadPage() {
+      window.location.reload();
+  }
   upload() {
     //locate the file element meant for the file upload.
         let inputEl: HTMLInputElement = this.el.nativeElement.querySelector('#products-icount');
@@ -39,13 +49,16 @@ export class NavbarComponent implements OnInit {
             this.http
         //post the form data to the url defined above and map the response. Then subscribe //to initiate the post. if you don't subscribe, angular wont post.
                 .post(URL, formData).subscribe(
+                    (res) => { console.log(res); window.location.reload(); }
                 //map the success function and alert the response
-                 (success) => {
-                         console.log(success);
-                },
-                (error) => {
-                  console.log(error);
-                })
+                //  (success) => {
+                //          console.log('success');
+                //          window.location.reload();
+                // },
+                // (error) => {
+                //   console.log(error);
+                // }
+                )
                 }
         
        }
