@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 export class ProductsService {
 
   uri = '/products';
-  uri2 = '/last_update';
+
   
   constructor(private http: HttpClient) { }
 
@@ -15,7 +15,7 @@ export class ProductsService {
    return this.http.get(this.uri);
   }
   getDate(){
-    return this.http.get(this.uri2);
+    return this.http.get(this.uri + '/last_update');
   }
 
 
