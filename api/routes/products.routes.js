@@ -30,8 +30,7 @@ productsRoutes.route('/').get(function (req, res) {
     }
   });
 });
-
-productsRoutes.route('/last_update').get(function (req, res) {
+productsRoutes.route('/last').get(function (req, res) {
   last_update.find(function (err, products) {
     if (err) {
       console.log(err);
@@ -39,7 +38,18 @@ productsRoutes.route('/last_update').get(function (req, res) {
       res.json(products);
     }
   });
+
 });
+
+productsRoutes.route('/:id').get(function (req, res) {
+  let id = req.params.id;
+  Products.findById(id, function (err, product){
+    res.json(product);
+});
+});
+
+
+
 
 
 //2. POST - collects a file uploaded, modify it, convert it to JSON and send it to the modification function.

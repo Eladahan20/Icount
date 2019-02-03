@@ -8,13 +8,15 @@ import { ProductsService } from './products.service';
 import { NavbarComponent } from './navbar/navbar.component';
 
 import {  FileUploadModule } from 'ng2-file-upload/ng2-file-upload';
+import { ProductDetailsComponent } from './product-details/product-details.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ProductListComponent,
-    NavbarComponent
+    NavbarComponent,
+    ProductDetailsComponent
   ],
   imports: [
     BrowserModule,

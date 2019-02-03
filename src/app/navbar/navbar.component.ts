@@ -3,7 +3,7 @@ import {  FileUploader } from 'ng2-file-upload/ng2-file-upload';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
 
-const URL = '/products';
+const URL = 'http://localhost:4000/products';
 
 @Component({
   selector: 'app-navbar',
