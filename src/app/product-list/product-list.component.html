@@ -8,7 +8,8 @@
             <td>שם המוצר</td>
             <td>כמות</td>
             <td>תנועה אחרונה</td>
-            <td>חודש אחרון</td>
+            <td>סה"כ (החל מפברואר)</td>
+            <td>דינאמיות</td>
 
      
         </tr>
@@ -21,6 +22,7 @@
                 <td>{{ product.Quantity }}</td>
                 <td>{{ product.daily}} ( {{ product.today_date | date: 'dd/MM/yyyy'}} )</td>
                 <td>{{ product.monthly}}</td>
+                <td>{{ product.dynamic}}</td>
           
               
             </tr>

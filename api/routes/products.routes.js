@@ -40,6 +40,18 @@ productsRoutes.route('/last').get(function (req, res) {
   });
 
 });
+productsRoutes.route('/erase').get(function (req, res) {
+  Products.updateMany({},
+    { $pop: { Stamps : -1 }},
+    function (err, products) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(products);
+    }
+  });
+
+});
 
 productsRoutes.route('/:id').get(function (req, res) {
   let id = req.params.id;

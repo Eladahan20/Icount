@@ -1,15 +1,33 @@
 <div class="container">
 
-<div class="text-center mt-4">
-    <h1>{{ product?.Name}}</h1>
-    <h4>{{ product?.SKU }} </h4>
-    <button class="btn btn-danger" (click)="showGraphs()">Show Graphs</button>
+<div style="direction: rtl; text-align:right" class="mt-4"> 
+    <h4>{{ product?.Name}}({{ product?.SKU }})</h4>
+    <!-- <button class="btn btn-danger" (click)="renderGraphs()">Double Click for Graphs</button> -->
 
 </div>
-  
-<div class="text-center">
-    <div *ngIf="chart">
-        <canvas id="canvas">{{ chart }} </canvas>
-    </div> 
-</div>
+<div *ngIf="isOn">
+   
+    <div class="container text-center">
+            <h3 class="m-3">גרף מכירות לפי תאריך</h3>
+        <div>
+            <canvas id="canvas">{{ chart }}</canvas>
+        </div> 
+    </div>
+    <div class="text-center mt-4">
+            <h3 class="m-3">כניסות סחורה</h3>
+        <table  class="table table-hover" style="direction: rtl; text-align: right">
+            <thead>
+            <tr>
+                <td>תאריך</td>
+                <td>כמות</td>
+            </tr>
+        </thead>
+            <tbody>
+                <tr *ngFor="let stamp of importStamps" >
+                    <td>{{ stamp?.time }}</td>
+                    <td>{{ stamp?.value }}</td>              
+                </tr>
+            </tbody>
+          </table>
+    </div>
 </div>

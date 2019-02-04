@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ProductsService {
 
-  uri = 'http://localhost:4000/products';
+  uri = '/products';
 
   
   constructor(private http: HttpClient) { }

@@ -44,11 +44,12 @@ export class ProductListComponent implements OnInit {
         const quantity_stamp = element[j];
         const values = Object.keys(quantity_stamp).map(key =>
           quantity_stamp[key]);
-        if (isNumber(values[0])) {
-          monthQuantity += values[0];
+        if (isNumber(values[0]) && values[0]<0) {
+          monthQuantity += values[0]*-1;
         }
       }
       products[i]['monthly'] = monthQuantity;
+      products[i]['dynamic'] = products[i]['Quantity']/monthQuantity;
 
     }
     return products;
@@ -66,8 +67,8 @@ export class ProductListComponent implements OnInit {
           todayStamp[key]);
         const keys = Object.keys(todayStamp);
         // assign it to 'today' dynamic attribute
-        if (isNumber(values[0])) {
-          element['daily'] = values[0];
+        if (isNumber(values[0]) && values[0]<0) {
+          element['daily'] = values[0]*-1;
           element['today_date'] = this.getTime(keys[0]);
         } else {
           element['daily'] = 0;
