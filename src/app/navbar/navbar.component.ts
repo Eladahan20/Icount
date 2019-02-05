@@ -3,7 +3,7 @@ import {  FileUploader } from 'ng2-file-upload/ng2-file-upload';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
 
-const URL = '/products';
+const URL = 'http://localhost:4000/products';
 
 @Component({
   selector: 'app-navbar',
@@ -35,6 +35,7 @@ export class NavbarComponent implements OnInit {
       window.location.reload();
   }
   upload() {
+      debugger;
     //locate the file element meant for the file upload.
         let inputEl: HTMLInputElement = this.el.nativeElement.querySelector('#products-icount');
     //get the total amount of files attached to the file input.

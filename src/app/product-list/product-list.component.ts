@@ -1,16 +1,8 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
-import {
-  Product
-} from '../Product';
-import {
-  ProductsService
-} from '../products.service';
-import {
-  isNumber
-} from 'util';
+import { Component, OnInit } from '@angular/core';
+import { Product} from '../Product';
+import { ProductsService } from '../products.service';
+import { isNumber } from 'util';
+import { MatSort, MatSortHeader, MatTableDataSource } from '@angular/material';
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
