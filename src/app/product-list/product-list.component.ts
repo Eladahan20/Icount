@@ -1,17 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Product} from '../Product';
 import { ProductsService } from '../products.service';
 import { isNumber } from 'util';
 import { MatSort, MatSortHeader, MatTableDataSource } from '@angular/material';
+import { } from 'rxjs';
+import {Router} from '@angular/router';
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit {
+  @ViewChild(MatSort) sort: MatSort;
+  arrangedProducts;
+  displayColumns = ['SKU', 'Name', 'Quantity', 'daily', 'monthly', 'dynamic'];
   products: Product[];
   date: number;
-  constructor(private ps: ProductsService) {}
+ 
+
+  constructor(private ps: ProductsService, private router:Router) {}
 
   ngOnInit() {
     this.ps
@@ -20,14 +27,18 @@ export class ProductListComponent implements OnInit {
         this.products = data;
         this.products = this.productsGetToday(this.products);
         this.products = this.productsGetMonth(this.products);
-        console.log(this.products);
+        this.arrangedProducts = new MatTableDataSource(this.products);
+        this.arrangedProducts.sort = this.sort;
+        console.log(this.arrangedProducts);
       })
     this.ps.getDate().subscribe((data: any) => {
       this.date = data[0]['last_update'];
     });
   }
 
-
+  selectRow(row) {
+    this.router.navigateByUrl('/item/'+row['_id']);
+}
   productsGetMonth(products) {
     for (let i = 0; i < products.length; i++) {
       var monthQuantity = 0;
